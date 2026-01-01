@@ -16,6 +16,7 @@
       align-items: center;
       height: 100vh;
     }
+
     .card {
       background: #020617;
       padding: 32px;
@@ -24,8 +25,17 @@
       max-width: 420px;
       box-shadow: 0 20px 40px rgba(0,0,0,.5);
     }
-    h1 { font-size: 20px; margin-bottom: 10px; }
-    p { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
 
     input {
       width: 100%;
@@ -47,6 +57,10 @@
       color: #fff;
       font-size: 14px;
       cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
     }
 
     .error {
@@ -76,16 +90,21 @@
     <div id="msg"></div>
   </div>
 
+  <!-- Supabase SDK -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
   <script>
+    // 🔐 Supabase Config
     const SUPABASE_URL = 'https://inhzkeenvlyryihmfpnu.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluaHprZWVudmx5cnlpaG1mcG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNjQzMzgsImV4cCI6MjA4Mjg0MDMzOH0.LePtjr_KA_IKQ38RitiMFUlCnb94ZLPsgrmdJcwOVJk';
+    const SUPABASE_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluaHprZWVudmx5cnlpaG1mcG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNjQzMzgsImV4cCI6MjA4Mjg0MDMzOH0.LePtjr_KA_IKQ38RitiMFUlCnb94ZLPsgrmdJcwOVJk';
 
     const sb = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
 
+    // 🚀 Login Function
     async function login() {
       const email = document.getElementById('email').value.trim();
       const code = document.getElementById('invite').value.trim();
@@ -94,34 +113,36 @@
       msg.innerHTML = '';
 
       if (!email || !code) {
-        msg.innerHTML = '<div class="error">ایمیل و کد معرف الزامی است</div>';
+        msg.innerHTML =
+          '<div class="error">ایمیل و کد معرف الزامی است</div>';
         return;
       }
 
-      // 1️⃣ بررسی Invite Code
-      const { data: invite, error } = await sb
-        .from('invite_codes')
-        .select('*')
-        .eq('code', code)
-        .is('used_by', null)
-        .single();
+      // ✅ 1️⃣ Check Invite Code via RPC (NO direct table access)
+      const { data: isValid, error: rpcError } = await sb.rpc(
+        'check_invite_code',
+        { invite_code: code }
+      );
 
-      if (error || !invite) {
-        msg.innerHTML = '<div class="error">کد معرف نامعتبر یا مصرف شده است</div>';
+      if (rpcError || !isValid) {
+        msg.innerHTML =
+          '<div class="error">کد معرف نامعتبر یا مصرف شده است</div>';
         return;
       }
 
-      // 2️⃣ ارسال لینک ورود
+      // ✅ 2️⃣ Send Magic Link
       const { error: authError } = await sb.auth.signInWithOtp({
         email: email
       });
 
       if (authError) {
-        msg.innerHTML = '<div class="error">خطا در ارسال ایمیل</div>';
+        msg.innerHTML =
+          '<div class="error">خطا در ارسال ایمیل ورود</div>';
         return;
       }
 
-      msg.innerHTML = '<div class="success">لینک ورود به ایمیل شما ارسال شد</div>';
+      msg.innerHTML =
+        '<div class="success">لینک ورود به ایمیل شما ارسال شد</div>';
     }
   </script>
 </body>
