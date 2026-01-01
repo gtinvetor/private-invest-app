@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>Private Investment Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #020617;
+      padding: 32px;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.5);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #cbd5f5;
+    }
+
+    .option {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      margin-bottom: 6px;
+      opacity: 0.7;
+    }
+
+    .option.active {
+      border: 1px solid #2563eb;
+      opacity: 1;
+    }
+
+    button {
+      width: 100%;
+      background: #2563eb;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Private Investment Platform</h1>
+    <p>Access limited to invited investors only.</p>
+
+    <div class="section">
+      <div class="section-title">Language</div>
+      <div class="option active">فارسی (Default)</div>
+      <div class="option">English</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Access Type</div>
+      <div class="option active">Invited Investor</div>
+      <div class="option">Public Access (Disabled)</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Projects</div>
+      <div class="option active">Project Alpha — Active</div>
+      <div class="option">Project Beta — Finished</div>
+      <div class="option">Project Gamma — Finished</div>
+    </div>
+
+    <div class="section">
+      <div class="option active">✔ I have read and accept the rules</div>
+    </div>
+
+    <button>Login / Register with Invite Code</button>
+  </div>
+</body>
+</html>
