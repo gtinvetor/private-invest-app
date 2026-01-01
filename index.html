@@ -108,5 +108,29 @@
 
     <button>Login / Register with Invite Code</button>
   </div>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = 'https://inhzkeenvlyryihmfpnu.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluaHprZWVudmx5cnlpaG1mcG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNjQzMzgsImV4cCI6MjA4Mjg0MDMzOH0.LePtjr_KA_IKQ38RitiMFUlCnb94ZLPsgrmdJcwOVJk';
+
+  const supabase = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  // 🔍 Test connection
+  async function testConnection() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('Supabase error:', error.message);
+    } else {
+      console.log('Supabase connected successfully ✅', data);
+    }
+  }
+
+  testConnection();
+</script>
+
 </body>
 </html>
