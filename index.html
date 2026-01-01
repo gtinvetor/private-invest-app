@@ -145,5 +145,21 @@
         '<div class="success">لینک ورود به ایمیل شما ارسال شد</div>';
     }
   </script>
+  <script>
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const inviteCode = localStorage.getItem('invite_code_used');
+
+      if (inviteCode) {
+        await sb.rpc('use_invite_code', {
+          invite_code: inviteCode
+        });
+
+        // جلوگیری از مصرف دوباره
+        localStorage.removeItem('invite_code_used');
+      }
+    }
+  });
+</script>
 </body>
 </html>
