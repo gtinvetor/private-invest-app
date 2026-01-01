@@ -159,6 +159,7 @@
 
         // جلوگیری از مصرف دوباره
         localStorage.removeItem('invite_code_used');
+        await sb.rpc('create_user_profile');
       }
     }
   });
