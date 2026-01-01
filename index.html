@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Private Investment Platform</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
     body {
@@ -16,7 +16,6 @@
       align-items: center;
       height: 100vh;
     }
-
     .card {
       background: #020617;
       padding: 32px;
@@ -25,40 +24,18 @@
       max-width: 420px;
       box-shadow: 0 20px 40px rgba(0,0,0,.5);
     }
+    h1 { font-size: 20px; margin-bottom: 10px; }
+    p { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
 
-    h1 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 14px;
-      color: #94a3b8;
-      margin-bottom: 20px;
-    }
-
-    .section {
-      margin-bottom: 16px;
-    }
-
-    .section-title {
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: #cbd5f5;
-    }
-
-    .option {
-      background: #0f172a;
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
       border-radius: 10px;
-      padding: 10px;
-      font-size: 13px;
-      margin-bottom: 6px;
-      opacity: 0.7;
-    }
-
-    .option.active {
-      border: 1px solid #2563eb;
-      opacity: 1;
+      border: none;
+      background: #0f172a;
+      color: #fff;
+      font-size: 14px;
     }
 
     button {
@@ -72,8 +49,16 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    .error {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: #4ade80;
+      font-size: 13px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -81,57 +66,63 @@
 <body>
   <div class="card">
     <h1>Private Investment Platform</h1>
-    <p>Access limited to invited investors only.</p>
+    <p>ورود فقط با ایمیل و کد معرف معتبر</p>
 
-    <div class="section">
-      <div class="section-title">Language</div>
-      <div class="option active">فارسی (Default)</div>
-      <div class="option">English</div>
-    </div>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="invite" type="text" placeholder="Invite Code" />
 
-    <div class="section">
-      <div class="section-title">Access Type</div>
-      <div class="option active">Invited Investor</div>
-      <div class="option">Public Access (Disabled)</div>
-    </div>
+    <button onclick="login()">ورود / ثبت‌نام</button>
 
-    <div class="section">
-      <div class="section-title">Projects</div>
-      <div class="option active">Project Alpha — Active</div>
-      <div class="option">Project Beta — Finished</div>
-      <div class="option">Project Gamma — Finished</div>
-    </div>
-
-    <div class="section">
-      <div class="option active">✔ I have read and accept the rules</div>
-    </div>
-
-    <button>Login / Register with Invite Code</button>
+    <div id="msg"></div>
   </div>
 
-  <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
   <script>
     const SUPABASE_URL = 'https://inhzkeenvlyryihmfpnu.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluaHprZWVudmx5cnlpaG1mcG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNjQzMzgsImV4cCI6MjA4Mjg0MDMzOH0.LePtjr_KA_IKQ38RitiMFUlCnb94ZLPsgrmdJcwOVJk';
+    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
 
-    // ⚠️ توجه: از نام supabase برای متغیر استفاده نمی‌کنیم
     const sb = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
 
-    async function testConnection() {
-      const { data, error } = await sb.auth.getSession();
-      if (error) {
-        console.error('Supabase error:', error.message);
-      } else {
-        console.log('Supabase connected successfully ✅', data);
-      }
-    }
+    async function login() {
+      const email = document.getElementById('email').value.trim();
+      const code = document.getElementById('invite').value.trim();
+      const msg = document.getElementById('msg');
 
-    testConnection();
+      msg.innerHTML = '';
+
+      if (!email || !code) {
+        msg.innerHTML = '<div class="error">ایمیل و کد معرف الزامی است</div>';
+        return;
+      }
+
+      // 1️⃣ بررسی Invite Code
+      const { data: invite, error } = await sb
+        .from('invite_codes')
+        .select('*')
+        .eq('code', code)
+        .is('used_by', null)
+        .single();
+
+      if (error || !invite) {
+        msg.innerHTML = '<div class="error">کد معرف نامعتبر یا مصرف شده است</div>';
+        return;
+      }
+
+      // 2️⃣ ارسال لینک ورود
+      const { error: authError } = await sb.auth.signInWithOtp({
+        email: email
+      });
+
+      if (authError) {
+        msg.innerHTML = '<div class="error">خطا در ارسال ایمیل</div>';
+        return;
+      }
+
+      msg.innerHTML = '<div class="success">لینک ورود به ایمیل شما ارسال شد</div>';
+    }
   </script>
 </body>
 </html>
