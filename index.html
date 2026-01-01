@@ -116,7 +116,8 @@
         msg.innerHTML =
           '<div class="error">ایمیل و کد معرف الزامی است</div>';
         return;
-      }
+             }
+
 
       // ✅ 1️⃣ Check Invite Code via RPC (NO direct table access)
       const { data: isValid, error: rpcError } = await sb.rpc(
@@ -128,6 +129,7 @@
         msg.innerHTML =
           '<div class="error">کد معرف نامعتبر یا مصرف شده است</div>';
         return;
+         localStorage.setItem('invite_code_used', code);
       }
 
       // ✅ 2️⃣ Send Magic Link
